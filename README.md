@@ -9,11 +9,11 @@ pip install numpy networkx 'python-louvain<0.9'
 
 ### Running the code
 
-To reproduce Table 1, Table 2, and Figure 3 , run
+To reproduce Table 1, Table 2, and Figure 3 run
 ```
 python main.py dir
 ```
-where `dir` is a directory with topology graphs. The resulting data will be written into the file `dir`.results 
+where `dir` is a directory with topology graphs. The resulting data will be written into the file `dir.results` 
 
 Example of `dir`.results:
 ```
