@@ -190,8 +190,7 @@ def DAGOPT(Gfull):
 def can_topological(G, u, v):
 	total_testl = len(G.in_edges(v,keys=True,data=True))
 	total_testr = len(G.out_edges(u,keys=True,data=True))
-	prev = len(nx.descendants(G, v).intersection([u]))
-	return (prev == 0 and (total_testl <= 1 or total_testr <= 1))
+	return (total_testl <= 1 or total_testr <= 1)
 
 
 
