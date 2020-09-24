@@ -201,7 +201,8 @@ def recover_original_graph_routing(graphs, info, estimators):
 		for u, v, k in graphs[x].edges_iter(keys=True):
 			if u != uid or v != vid or k != kid:
 				uu,vv,kk = mapE[(u,v,k)]
-				graphs[x][u][v][k]['capacity'] = max(graphs[x+1][uu][vv][kk]['capacity'], graphs[x][u][v][k]['capacity'])
+				if uu != vv:
+					graphs[x][u][v][k]['capacity'] = max(graphs[x+1][uu][vv][kk]['capacity'], graphs[x][u][v][k]['capacity'])
 
 		Gtest = convert_to_di(graphs[x])
 		inn = estimators[0](Gtest, uid)
@@ -236,11 +237,13 @@ def routing_equivalent_multi(G_input, estimators, is_tradeoff, max_cap = 0):
 
 		edge_map = { (u,v,k) :  (u,v,k) for u,v,k in G.edges_iter(keys=True) };
 		for uu,vv,kk,dd in G.out_edges(v, keys=True, data=True):
-			edge_map[(uu, vv, kk)] = (u,vv,len(G.edge[u].get(vv,{})))
-			G.add_edge(u, vv, len(G.edge[u].get(vv,{})), dd)
+			edge_map[(uu, vv, kk)] = (u,vv,len(G.edge[u].get(vv,{})))	
+			if (vv != u):			
+				G.add_edge(u, vv, len(G.edge[u].get(vv,{})), dd)
 
 		for uu,vv,kk,dd in G.in_edges(v, keys=True, data=True):
 			if uu != u or kk != k:
+				assert uu != u
 				edge_map[(uu, vv, kk)] = (uu, u, len(G.edge[uu].get(u,{})))
 				G.add_edge(uu, u, len(G.edge[uu].get(u,{})), dd)
 		G.remove_node(v)
@@ -258,18 +261,22 @@ def routing_equivalent_multi(G_input, estimators, is_tradeoff, max_cap = 0):
 
 		Gsimple = convert_to_di(G)
 
+		inp[u] = estimators[0](Gsimple, u)
+		outp[u] = estimators[1](Gsimple, u)
 
 		if (c < inp[u]):
-			to_update = nx.descendants(Gsimple, u).union([u])
+			to_update = nx.descendants(Gsimple, u)
 			for node in to_update:
 				if node < DEST_INT:
 					inp[node] = estimators[0](Gsimple, node)
 
+
 		if (c < outp[v]):
-			to_update = nx.ancestors(Gsimple, u).union([u])
+			to_update = nx.ancestors(Gsimple, u)
 			for node in to_update:
 				if node >= 0:
 					outp[node] = estimators[1](Gsimple, node)
+
 
 
 	if not is_tradeoff:
@@ -384,15 +391,19 @@ def routing_nonequivalent_multi(G_input, estimators, is_tradeoff, max_cap = 0):
 			answers.append(full_cap_multi(copies[0]))
 
 
+
+
+		inp[u] = estimators[0](Gsimple, u)
+		outp[u] = estimators[1](Gsimple, u)
 		if c < inp[u]:
-			to_update = nx.descendants(Gsimple, u).union([u])
+			to_update = nx.descendants(Gsimple, u)
 			for node in to_update:
 				if node < DEST_INT:
 					inp[node] = estimators[0](Gsimple, node)
 
 
 		if c < outp[v]:
-			to_update = nx.ancestors(Gsimple, u).union([u])
+			to_update = nx.ancestors(Gsimple, u)
 			for node in to_update:
 				if node >= 0:
 					outp[node] = estimators[1](Gsimple, node)
