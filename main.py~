@@ -36,11 +36,14 @@ def print_statistics(lists, file, norm):
 for in_fname in glob.glob(in_dir + '/graph*.txt'):
 	print(in_fname)
 	Gfull = read_graph(in_fname)
+	#print(num_nodes(Gfull), num_edges(Gfull), full_cap(Gfull))
 	Gfull = simplify(Gfull)
-	if not validate_topology(Gfull):
-		continue
+	#print(num_nodes(Gfull), num_edges(Gfull))
+	#continue;
+
 
 	Gfull_m = convert_to_multi(Gfull)
+	
 	Gdagopt = DAGOPT(Gfull)
 	Gwpp = WPP(Gfull)
 

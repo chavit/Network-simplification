@@ -59,6 +59,7 @@ def read_graph(in_fname):
 
 	recheable = recheableforward.intersection(recheablebackward)
 	nnodex = [u for u in Gfull.nodes() if u >= 0 and u < DEST_INT and recheable.isdisjoint([u])]
+	
 	for u in nnodex:
 		Gfull.remove_node(u)
 
@@ -263,6 +264,8 @@ def routing_equivalent_multi(G_input, estimators, is_tradeoff, max_cap = 0):
 	copies = [G_input.copy()]
 	info = []
 	answers = [full_cap_multi(G)]
+	
+	
 	while True:
 		edges_candidates = [(u,v,k,d['capacity'], inp[u], outp[v]) for u,v,k,d in G.edges_iter(keys=True,data=True) if u>=0 and v<DEST_INT and u!=v and can_topological(G,u,v) and min(inp[u], outp[v]) < BIG_CAP]
 		randomizer.shuffle(edges_candidates)
